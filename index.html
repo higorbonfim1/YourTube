@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>YourTube</title>
+    <style>
+        body { 
+            font-family: Roboto, Arial, sans-serif; 
+            margin: 0; 
+            background: #f9f9f9; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        header { 
+            background: #fff; 
+            height: 68px;
+            padding: 0 24px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            box-shadow: 0 1px 5px rgba(0,0,0,0.08); 
+            z-index: 2000;
+            box-sizing: border-box;
+        }
+
+        /* BLOCO ESQUERDO */
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            min-width: 220px;
+        }
+
+        .menu-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: #0f0f0f;
+            user-select: none;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .menu-btn:hover {
+            background: #f2f2f2;
+        }
+
+        .logo {
+            font-weight: bold; 
+            color: red; 
+            font-size: 24px; 
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .logo span {
+            color:#606060; 
+            font-size:12px; 
+            margin-top: 2px;
+        }
+
+        /* BLOCO CENTRAL */
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 0 30px;
+        }
+
+        .search-wrapper {
+            width: 100%;
+            max-width: 760px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input { 
+            width: 100%; 
+            height: 44px;
+            padding: 0 18px; 
+            border: 1px solid #ccc; 
+            border-right: none;
+            border-radius: 24px 0 0 24px; 
+            outline: none;
+            font-size: 16px;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        .search-btn {
+            width: 64px;
+            height: 44px;
+            border: 1px solid #ccc;
+            border-left: 1px solid #ddd;
+            border-radius: 0 24px 24px 0;
+            background: #f8f8f8;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .search-btn:hover {
+            background: #f1f1f1;
+        }
+
+        /* BLOCO DIREITO */
+        .header-right {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            position: relative;
+            min-width: 220px;
+            justify-content: flex-end;
+        }
+
+        .create-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f2f2f2;
+            border: none;
+            border-radius: 22px;
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #0f0f0f;
+        }
+
+        .create-btn:hover {
+            background: #e5e5e5;
+        }
+
+        .create-plus {
+            font-size: 22px;
+            line-height: 1;
+            margin-top: -1px;
+        }
+
+        .perfil-btn {
+            cursor:pointer; 
+            border:none; 
+            background:red; 
+            color:white; 
+            width: 40px;
+            height: 40px;
+            border-radius:50%; 
+            font-weight:bold;
+            font-size: 18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .main-layout { 
+            display: flex; 
+        }
+
+        /* SIDEBAR ABERTA */
+        .sidebar { 
+            width: 240px; 
+            height: calc(100vh - 68px); 
+            position: sticky; 
+            top: 68px; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            background: #fff; 
+            border-right: 1px solid #eee; 
+            transition: width 0.25s ease;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .sidebar-item { 
+            padding: 10px 15px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            text-decoration: none; 
+            color: black; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            white-space: nowrap;
+        }
+
+        .sidebar-item:hover { background: #f2f2f2; }
+
+        .sidebar-section-title { 
+            padding: 10px 15px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            cursor: pointer; 
+            white-space: nowrap;
+        }
+
+        .icon-only {
+            min-width: 24px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .item-text {
+            transition: opacity 0.2s ease;
+        }
+
+        /* SIDEBAR FECHADA */
+        .sidebar.collapsed {
+            width: 78px;
+            padding: 10px 6px;
+        }
+
+        .sidebar.collapsed .sidebar-item {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 6px;
+            font-size: 11px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        .sidebar.collapsed .sidebar-section-title,
+        .sidebar.collapsed hr {
+            display: none;
+        }
+
+        .sidebar.collapsed .icon-only {
+            font-size: 20px;
+            min-width: auto;
+        }
+
+        .sidebar.collapsed .item-text {
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        /* CONTEÚDO */
+        .content-area {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            padding: 20px; 
+        }
+
+        .video-card { cursor: pointer; transition: transform 0.2s; }
+        .video-card:hover { transform: scale(1.02); }
+
+        .thumbnail-container { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; }
+        .thumbnail { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+
+        .video-info { margin-top: 12px; display: flex; gap: 12px; }
+        .channel-icon { width: 36px; height: 36px; background: #ddd; border-radius: 50%; flex-shrink: 0; }
+        .text-info { flex-grow: 1; }
+        .video-title { font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0f0f0f; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .video-meta { font-size: 14px; color: #606060; }
+
+        #menuPerfil { 
+            display: none; 
+            position: absolute; 
+            right: 0; 
+            top: 56px; 
+            background: white; 
+            border: 1px solid #ddd; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            width: 220px; 
+            z-index: 3000; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            padding: 8px 0; 
+        }
+
+        #menuPerfil a { 
+            display: block; 
+            padding: 12px 20px; 
+            text-decoration: none; 
+            color: #0f0f0f; 
+            font-size: 14px; 
+        }
+
+        #menuPerfil a:hover { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<header>
+    <!-- ESQUERDA -->
+    <div class="header-left">
+        <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+        <div class="logo" onclick="window.location.href='index.html'">
+            YourTube <span>BR</span>
+        </div>
+    </div>
+
+    <!-- CENTRO -->
+    <div class="header-center">
+        <div class="search-wrapper">
+            <div class="search-bar">
+                <input type="text" id="inputBusca" placeholder="Pesquisar" onkeyup="filtrarVideos()">
+                <button class="search-btn" onclick="filtrarVideos()">🔍</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIREITA -->
+    <div class="header-right">
+        <button class="create-btn" onclick="verificarAcesso('estudio.html')">
+            <span class="create-plus">+</span>
+            <span>Criar</span>
+        </button>
+
+        <button onclick="toggleMenu(event)" id="btnPerfil" class="perfil-btn">P</button>
+        
+        <div id="menuPerfil">
+            <a href="javascript:void(0)" onclick="verificarAcesso('canal.html')">👤 Meu Canal</a>
+            <a href="javascript:void(0)" onclick="verificarAcesso('estudio.html')">⚙️ Estúdio</a>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 8px 0;">
+            <a href="javascript:void(0)" onclick="sair()" style="color: #cc0000; font-weight:bold;">🚪 Sair</a>
+        </div>
+    </div>
+</header>
+
+<div class="main-layout">
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-item" onclick="window.location.href='index.html'" style="background: #f2f2f2; font-weight: bold;">
+            <span class="icon-only">🏠</span>
+            <span class="item-text">Início</span>
+        </div>
+
+        <div class="sidebar-item" onclick="verificarAcesso('inscricoes.html')">
+            <span class="icon-only">📺</span>
+            <span class="item-text">Inscrições</span>
+        </div>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+        
+        <div class="sidebar-section-title" onclick="verificarAcesso('canal.html')">Você &rsaquo;</div>
+        
+        <div class="sidebar-item" onclick="verificarAcesso('historico.html')">
+            <span class="icon-only">🕒</span>
+            <span class="item-text">Histórico</span>
+        </div>
+
+        <div class="sidebar-item" onclick="alert('Funcionalidade em breve!')">
+            <span class="icon-only">⌚</span>
+            <span class="item-text">Assistir mais tarde</span>
+        </div>
+    </div>
+
+    <div class="content-area">
+        <div class="container" id="videoContainer">
+            <div class="video-card" onclick="irParaVideo('https://vjs.zencdn.net', 'Vídeo de Exemplo do Oceano', 'VideoJS')">
+                <div class="thumbnail-container">
+                    <video class="thumbnail"><source src="https://vjs.zencdn.net" type="video/mp4"></video>
+                </div>
+                <div class="video-info">
+                    <div class="channel-icon"></div>
+                    <div class="text-info">
+                        <div class="video-title">Vídeo de Exemplo do Oceano</div>
+                        <div class="video-meta">VideoJS • 10 mil visualizações</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("collapsed");
+    }
+
+    function filtrarVideos() {
+        const termo = document.getElementById('inputBusca').value.toLowerCase();
+        const cards = document.querySelectorAll('.video-card');
+        cards.forEach(card => {
+            const titulo = card.querySelector('.video-title').innerText.toLowerCase();
+            card.style.display = titulo.includes(termo) ? "block" : "none";
+        });
+    }
+
+    function irParaVideo(url, titulo, autor) {
+        let historico = JSON.parse(localStorage.getItem("historicoVideos") || "[]");
+        historico.push({ url, titulo, autor: autor || "Higor Bonfim", data: new Date().toLocaleDateString() });
+        localStorage.setItem("historicoVideos", JSON.stringify(historico.slice(-50)));
+        window.location.href = `watch.html?v=${encodeURIComponent(url)}&t=${encodeURIComponent(titulo)}`;
+    }
+
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById("menuPerfil");
+        menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    }
+
+    function verificarAcesso(pagina) {
+        if (localStorage.getItem("logado") === "true") {
+            window.location.href = pagina;
+        } else {
+            alert("Por favor, faça login primeiro!");
+            window.location.href = 'login.html';
+        }
+    }
+
+    function sair() {
+        localStorage.removeItem("logado");
+        localStorage.removeItem("usuarioNome");
+        window.location.href = 'login.html';
+    }
+
+    window.onclick = () => document.getElementById("menuPerfil").style.display = "none";
+
+    window.onload = function() {
+        const listaVideos = JSON.parse(localStorage.getItem("meusVideos") || "[]");
+        const container = document.getElementById('videoContainer');
+        const nomeUser = localStorage.getItem("usuarioNome") || "Higor Bonfim";
+        document.getElementById('btnPerfil').innerText = nomeUser.charAt(0).toUpperCase();
+
+        listaVideos.forEach(video => {
+            const videoHTML = `
+                <div class="video-card" onclick="irParaVideo('${video.url}', '${video.titulo}', '${video.autor}')">
+                    <div class="thumbnail-container"><video class="thumbnail"><source src="${video.url}" type="video/mp4"></video></div>
+                    <div class="video-info">
+                        <div class="channel-icon"></div>
+                        <div class="text-info">
+                            <div class="video-title">${video.titulo}</div>
+                            <div class="video-meta">${video.autor} • ${video.views || '0 visualizações'}</div>
+                        </div>
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('afterbegin', videoHTML);
+        });
+    }
+</script>
+
+</body>
+</html>

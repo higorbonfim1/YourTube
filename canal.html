@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Canal - YourTube</title>
+    <style>
+        body {
+            font-family: Roboto, Arial, sans-serif;
+            margin: 0;
+            background: #f9f9f9;
+            color: #0f0f0f;
+        }
+
+        header {
+            background: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+        }
+
+        .search-bar input {
+            width: 400px;
+            padding: 8px 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .main-layout {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: calc(100vh - 56px);
+            position: sticky;
+            top: 56px;
+            padding: 10px;
+            background: #fff;
+            border-right: 1px solid #eee;
+        }
+
+        .sidebar-item {
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-item:hover {
+            background: #f2f2f2;
+        }
+
+        .channel-header {
+            padding: 40px 100px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .channel-pfp {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: #ff0000;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            font-weight: bold;
+            border: 4px solid white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .channel-info h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        .channel-info p {
+            color: #606060;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .channel-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            background: #f2f2f2;
+            color: #0f0f0f;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-action:hover {
+            background: #e5e5e5;
+        }
+
+        .channel-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding: 0 100px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+        }
+
+        .tab-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            color: #606060;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .tab-item.active {
+            color: #0f0f0f;
+        }
+
+        .tab-item.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #0f0f0f;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 16px;
+            padding: 30px 100px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .video-card {
+            cursor: pointer;
+        }
+
+        .thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .v-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 8px;
+            color: #0f0f0f;
+        }
+
+        .v-meta {
+            font-size: 12px;
+            color: #606060;
+            margin-top: 4px;
+        }
+
+        .empty-box {
+            padding: 50px;
+            text-align: center;
+            color: #606060;
+            font-size: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .featured-box {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 100px;
+        }
+
+        .featured-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 10px 0;
+        }
+
+        .channel-banner {
+            height: 180px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(90deg, #ff0000, #cc0000);
+            border-radius: 0 0 18px 18px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="font-weight: bold; color: red; font-size: 24px; cursor:pointer;" onclick="window.location.href='index.html'">
+        YourTube <span style="color:#606060; font-size:12px; vertical-align:top;">BR</span>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Pesquisar">
+    </div>
+
+    <div style="display: flex; gap: 20px; align-items: center;">
+        <span style="cursor:pointer; font-weight:bold;" onclick="window.location.href='estudio.html'">+ Criar</span>
+        <div id="top-user-icon" style="width:32px; height:32px; background:red; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">H</div>
+    </div>
+</header>
+
+<div class="main-layout">
+    <div class="sidebar">
+        <div class="sidebar-item" onclick="window.location.href='index.html'">🏠 Início</div>
+        <div class="sidebar-item" onclick="window.location.href='inscricoes.html'">📺 Inscrições</div>
+        <hr>
+        <div style="padding: 10px 15px; font-weight: bold;">Você &rsaquo;</div>
+        <div class="sidebar-item" onclick="window.location.href='historico.html'">🕒 Histórico</div>
+        <div class="sidebar-item">📽️ Seus vídeos</div>
+        <div class="sidebar-item">⌚ Assistir mais tarde</div>
+    </div>
+
+    <div style="flex-grow: 1;">
+        <div class="channel-banner"></div>
+
+        <div class="channel-header">
+            <div id="channel-pfp" class="channel-pfp">H</div>
+            <div class="channel-info">
+                <h1 id="nome-canal-txt">Higor Bonfim</h1>
+                <p id="info-inscritos">@higorbonfim • 0 inscrito(s)</p>
+                <p id="info-videos-canal">0 vídeos publicados</p>
+                <p style="font-size: 13px;">
+                    Saiba mais sobre este canal
+                    <b style="color:#065fd4; cursor:pointer;">...mais</b>
+                </p>
+
+                <div class="channel-buttons">
+                    <button class="btn-action" onclick="window.location.href='estudio.html'">Personalizar o canal</button>
+                    <button class="btn-action" onclick="window.location.href='estudio.html'">Gerenciar vídeos</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="channel-tabs">
+            <div class="tab-item active" onclick="trocarAbaCanal('inicio', this)">INÍCIO</div>
+            <div class="tab-item" onclick="trocarAbaCanal('videos', this)">VÍDEOS</div>
+            <div class="tab-item" onclick="trocarAbaCanal('playlists', this)">PLAYLISTS</div>
+        </div>
+
+        <div id="inicio" class="tab-content active">
+            <div class="featured-box">
+                <div class="featured-card">
+                    <h3 style="margin-top:0;">Vídeos deste canal</h3>
+                    <div class="video-grid" id="grid-inicio" style="padding:20px 0 0 0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="videos" class="tab-content">
+            <div class="video-grid" id="grid-canal"></div>
+        </div>
+
+        <div id="playlists" class="tab-content">
+            <div class="empty-box" id="playlists-box">
+                Nenhuma playlist criada ainda.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let meusVideosCache = [];
+
+    function gerarCanalId() {
+        return "canal_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+    }
+
+    function garantirCanalId() {
+        // USA A MESMA CHAVE DO ESTUDIO.HTML
+        let canalId = localStorage.getItem("usuarioId");
+        if (!canalId) {
+            canalId = gerarCanalId();
+            localStorage.setItem("usuarioId", canalId);
+        }
+        return canalId;
+    }
+
+    function obterNomeCanal() {
+        return localStorage.getItem("usuarioNome") || "Higor Bonfim";
+    }
+
+    function obterInscritos() {
+        return localStorage.getItem("totalInscritos") || "0";
+    }
+
+    function formatarNumero(numero) {
+        return Number(numero || 0).toLocaleString("pt-BR");
+    }
+
+    function extrairNumeroViews(textoViews) {
+        if (!textoViews) return 0;
+        const numero = String(textoViews).replace(/[^\d]/g, "");
+        return Number(numero || 0);
+    }
+
+    function trocarAbaCanal(idAba, elemento) {
+        document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(conteudo => conteudo.classList.remove('active'));
+
+        elemento.classList.add('active');
+        document.getElementById(idAba).classList.add('active');
+    }
+
+    function criarCardVideo(video) {
+        const viewsNumero = extrairNumeroViews(video.views);
+        const viewsTexto = viewsNumero + " visualizações";
+
+        return `
+            <div class="video-card" onclick="window.location.href='watch.html?v=${encodeURIComponent(video.url)}&t=${encodeURIComponent(video.titulo)}'">
+                <video class="thumb" src="${video.url}" muted preload="metadata"></video>
+                <div class="v-title">${video.titulo}</div>
+                <div class="v-meta">${viewsTexto} • Hoje</div>
+            </div>
+        `;
+    }
+
+    function obterVideosDoCanalAtual() {
+        const todosVideos = JSON.parse(localStorage.getItem("meusVideos") || "[]");
+        const canalAtual = garantirCanalId();
+        const nomeAtual = obterNomeCanal();
+
+        return todosVideos.filter(video => {
+            // vídeos novos (correto)
+            if (video.canalId) {
+                return video.canalId === canalAtual;
+            }
+
+            // compatibilidade com vídeos antigos
+            return video.autor === nomeAtual;
+        });
+    }
+
+    function carregarVideosCanal() {
+        meusVideosCache = obterVideosDoCanalAtual();
+
+        const gridInicio = document.getElementById('grid-inicio');
+        const gridCanal = document.getElementById('grid-canal');
+        const infoVideosCanal = document.getElementById('info-videos-canal');
+
+        infoVideosCanal.textContent = `${meusVideosCache.length} vídeo(s) publicado(s)`;
+
+        if (meusVideosCache.length === 0) {
+            gridInicio.innerHTML = "<p style='color:#606060; grid-column: 1/-1; text-align:center;'>Este canal ainda não possui vídeos postados.</p>";
+            gridCanal.innerHTML = "<p style='color:#606060; grid-column: 1/-1; text-align:center; padding: 50px;'>Este canal ainda não possui vídeos postados.</p>";
+            return;
+        }
+
+        gridInicio.innerHTML = "";
+        gridCanal.innerHTML = "";
+
+        meusVideosCache.forEach(video => {
+            const card = criarCardVideo(video);
+            gridInicio.innerHTML += card;
+            gridCanal.innerHTML += card;
+        });
+    }
+
+    function carregarInfosCanal() {
+        const nome = obterNomeCanal();
+        const inscritos = obterInscritos();
+
+        garantirCanalId();
+
+        document.getElementById('nome-canal-txt').innerText = nome;
+        document.getElementById('top-user-icon').innerText = nome.charAt(0).toUpperCase();
+        document.getElementById('channel-pfp').innerText = nome.charAt(0).toUpperCase();
+        document.getElementById('info-inscritos').innerText =
+            `@${nome.toLowerCase().replace(/\s/g, '')} • ${inscritos} inscrito(s)`;
+    }
+
+    window.onload = function() {
+        carregarInfosCanal();
+        carregarVideosCanal();
+    };
+</script>
+
+</body>
+</html>

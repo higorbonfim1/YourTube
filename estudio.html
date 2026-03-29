@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Estúdio Criador - MyTube</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background: #f9f9f9;
+            color: #0f0f0f;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .channel-box {
+            padding: 24px 20px;
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .avatar {
+            width: 95px;
+            height: 95px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: red;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .channel-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .channel-subtitle {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: #606060;
+        }
+
+        .menu {
+            padding: 14px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 22px;
+            cursor: pointer;
+            color: #3f3f3f;
+            font-size: 15px;
+            transition: 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #f2f2f2;
+        }
+
+        .menu-item.active {
+            background: #ededed;
+            color: #d40000;
+            font-weight: bold;
+            border-left: 4px solid #d40000;
+        }
+
+        .menu-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e5e5e5;
+            margin: 8px 0;
+        }
+
+        /* MAIN */
+        .main {
+            flex-grow: 1;
+            padding: 35px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .upload-btn {
+            background: #ffffff;
+            color: #0f0f0f;
+            border: 1px solid #d9d9d9;
+            padding: 10px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            background: #f2f2f2;
+            border-color: #cfcfcf;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* MODAL CLARO COM ETAPAS ESTILO YOUTUBE */
+        #modalUpload {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .yt-light-modal {
+            width: 100%;
+            max-width: 960px;
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            display: flex;
+            flex-direction: column;
+            max-height: 92vh;
+            animation: subirModal 0.25s ease;
+        }
+
+        @keyframes subirModal {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .yt-light-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 28px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .yt-light-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #0f0f0f;
+        }
+
+        .yt-close-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #606060;
+        }
+
+        .yt-close-btn:hover {
+            color: #000;
+        }
+
+        .yt-steps {
+            display: flex;
+            border-bottom: 1px solid #e5e5e5;
+            background: #fff;
+        }
+
+        .yt-step {
+            flex: 1;
+            text-align: center;
+            padding: 16px 10px;
+            font-size: 14px;
+            color: #606060;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .yt-step.active {
+            color: #0f0f0f;
+            font-weight: 700;
+        }
+
+        .yt-step.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            width: 70%;
+            height: 3px;
+            background: #065fd4;
+            border-radius: 999px;
+        }
+
+        .yt-light-body {
+            padding: 28px;
+            overflow-y: auto;
+            min-height: 420px;
+        }
+
+        .yt-step-content {
+            display: none;
+        }
+
+        .yt-step-content.active {
+            display: block;
+        }
+
+        .yt-step-content h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #0f0f0f;
+        }
+
+        .yt-modern-input,
+        .yt-modern-textarea {
+            width: 100%;
+            border: 1px solid #d3d3d3;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 15px;
+            margin-bottom: 16px;
+            outline: none;
+            transition: 0.2s;
+            font-family: Arial, sans-serif;
+        }
+
+        .yt-modern-input:focus,
+        .yt-modern-textarea:focus {
+            border-color: #065fd4;
+            box-shadow: 0 0 0 2px rgba(6,95,212,0.12);
+        }
+
+        .yt-modern-textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .yt-file-box {
+            border: 1px dashed #cfcfcf;
+            border-radius: 12px;
+            padding: 20px;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .yt-file-btn {
+            background: #065fd4;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 999px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .yt-file-btn:hover {
+            background: #054db0;
+        }
+
+        .yt-file-name {
+            color: #606060;
+            font-size: 14px;
+        }
+
+        .yt-note {
+            font-size: 13px;
+            color: #606060;
+            margin-top: 10px;
+        }
+
+        .yt-info-card {
+            border: 1px solid #e5e5e5;
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .yt-radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            font-size: 15px;
+            color: #0f0f0f;
+        }
+
+        .yt-radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .yt-light-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 18px 28px;
+            border-top: 1px solid #e5e5e5;
+            background: #fff;
+        }
+
+        .yt-footer-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 22px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .yt-footer-btn.secondary {
+            background: #f2f2f2;
+            color: #0f0f0f;
+        }
+
+        .yt-footer-btn.secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .yt-footer-btn.primary {
+            background: #065fd4;
+            color: white;
+        }
+
+        .yt-footer-btn.primary:hover {
+            background: #054db0;
+        }
+
+        .video-item {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            background: #fafafa;
+        }
+
+        .small-muted {
+            color: #606060;
+            margin: 6px 0;
+        }
+
+        .video-link {
+            color: #065fd4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .video-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="channel-box">
+            <div class="avatar" id="avatarCanal">H</div>
+            <p class="channel-name" id="nomeCanalSidebar">Higor_Bonfim</p>
+            <p class="channel-subtitle">Painel do canal</p>
+        </div>
+
+        <div class="menu">
+            <div class="menu-item active" onclick="trocarAba('painel', this)">
+                <span class="menu-icon">📊</span>
+                <span>Painel</span>
+            </div>
+
+            <div class="menu-item" onclick="trocarAba('conteudo', this)">
+                <span class="menu-icon">🎞️</span>
+                <span>Conteúdo</span>
+            </div>
+
+            <div class="menu-item" onclick="trocarAba('analytics', this)">
+                <span class="menu-icon">📈</span>
+                <span>Analytics</span>
+            </div>
+
+            <div class="menu-item" onclick="trocarAba('direitos', this)">
+                <span class="menu-icon">©️</span>
+                <span>Direitos autorais</span>
+            </div>
+
+            <div class="menu-item" onclick="trocarAba('ganhos', this)">
+                <span class="menu-icon">💰</span>
+                <span>Ganhos</span>
+            </div>
+
+            <div class="menu-item" onclick="trocarAba('personalizacao', this)">
+                <span class="menu-icon">🖍️</span>
+                <span>Personalização</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="menu-item" onclick="window.location.href='index.html'">
+                <span class="menu-icon">⬅️</span>
+                <span>Voltar ao Site</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="header">
+            <h1 id="titulo-pagina">Painel do Canal</h1>
+            <button class="upload-btn" onclick="abrirModal()">
+                <span style="font-size:18px; font-weight:bold;">+</span>
+                <span>Criar</span>
+            </button>
+        </div>
+
+        <!-- PAINEL -->
+        <div id="painel" class="tab-content active">
+            <div class="card">
+                <h3>Resumo do Canal</h3>
+                <p id="resumoVideos">Vídeos publicados: 0</p>
+                <p id="resumoViews">Visualizações: 0</p>
+                <p id="resumoInscritos">Inscritos: 0</p>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div id="conteudo" class="tab-content">
+            <div class="card">
+                <h3>Seus Vídeos Postados</h3>
+                <p>Os vídeos enviados aparecerão na página inicial.</p>
+                <div id="listaVideosStudio"></div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <h3>Analytics</h3>
+                <p id="analyticsViews">Visualizações totais: 0</p>
+                <p id="analyticsWatch">Tempo de exibição: 0 horas</p>
+                <p id="analyticsSubs">Inscritos ganhos: 0</p>
+            </div>
+        </div>
+
+        <!-- DIREITOS AUTORAIS -->
+        <div id="direitos" class="tab-content">
+            <div class="card">
+                <h3>Direitos autorais</h3>
+                <p>Nenhuma reivindicação encontrada.</p>
+            </div>
+        </div>
+
+        <!-- GANHOS -->
+        <div id="ganhos" class="tab-content">
+            <div class="card">
+                <h3>Ganhos</h3>
+                <p>Seu canal ainda não está monetizado.</p>
+                <p>Receita estimada: R$ 0,00</p>
+            </div>
+        </div>
+
+        <!-- PERSONALIZAÇÃO -->
+        <div id="personalizacao" class="tab-content">
+            <div class="card">
+                <h3>Personalização do Canal</h3>
+                <p id="nomeCanalPersonalizacao">Nome do canal: Higor_Bonfim</p>
+                <p>Descrição: Painel do canal</p>
+                <p id="idCanalPersonalizacao">ID do canal: -</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE UPLOAD COM ETAPAS -->
+    <div id="modalUpload">
+        <div class="yt-light-modal">
+            <!-- TOPO -->
+            <div class="yt-light-header">
+                <h2>Enviar vídeos</h2>
+                <button class="yt-close-btn" onclick="fecharModal()">✕</button>
+            </div>
+
+            <!-- ETAPAS -->
+            <div class="yt-steps">
+                <div class="yt-step active" id="stepBtn1">Detalhes</div>
+                <div class="yt-step" id="stepBtn2">Elementos do vídeo</div>
+                <div class="yt-step" id="stepBtn3">Verificações</div>
+                <div class="yt-step" id="stepBtn4">Visibilidade</div>
+            </div>
+
+            <!-- CONTEÚDO -->
+            <div class="yt-light-body">
+                <!-- ETAPA 1 -->
+                <div class="yt-step-content active" id="step1">
+                    <h3>Detalhes</h3>
+
+                    <input type="text" id="tituloVideo" placeholder="Adicione um título que descreva seu vídeo" class="yt-modern-input">
+
+                    <textarea id="descricaoVideo" placeholder="Fale aos espectadores sobre seu vídeo" class="yt-modern-textarea"></textarea>
+
+                    <div class="yt-file-box">
+                        <label for="arquivoVideo" class="yt-file-btn">Selecionar arquivo</label>
+                        <input type="file" id="arquivoVideo" accept="video/*" style="display:none;">
+                        <span id="nomeArquivo" class="yt-file-name">Nenhum arquivo selecionado</span>
+                    </div>
+
+                    <p class="yt-note">O vídeo será salvo permanentemente no seu servidor.</p>
+                </div>
+
+                <!-- ETAPA 2 -->
+                <div class="yt-step-content" id="step2">
+                    <h3>Elementos do vídeo</h3>
+                    <div class="yt-info-card">
+                        <p><strong>Miniatura:</strong> em breve você poderá adicionar uma miniatura personalizada.</p>
+                        <p><strong>Telas finais:</strong> funcionalidade futura.</p>
+                        <p><strong>Cards:</strong> funcionalidade futura.</p>
+                    </div>
+                </div>
+
+                <!-- ETAPA 3 -->
+                <div class="yt-step-content" id="step3">
+                    <h3>Verificações</h3>
+                    <div class="yt-info-card">
+                        <p>Nenhum problema encontrado.</p>
+                        <p>Seu vídeo está pronto para continuar.</p>
+                    </div>
+                </div>
+
+                <!-- ETAPA 4 -->
+                <div class="yt-step-content" id="step4">
+                    <h3>Visibilidade</h3>
+
+                    <div class="yt-radio-group">
+                        <label><input type="radio" name="visibilidade" value="publico" checked> Público</label>
+                        <label><input type="radio" name="visibilidade" value="nao-listado"> Não listado</label>
+                        <label><input type="radio" name="visibilidade" value="privado"> Privado</label>
+                    </div>
+
+                    <p class="yt-note">Escolha quem poderá ver este vídeo depois da publicação.</p>
+                </div>
+            </div>
+
+            <!-- RODAPÉ -->
+            <div class="yt-light-footer">
+                <button class="yt-footer-btn secondary" onclick="voltarEtapa()" id="btnVoltar" disabled>Voltar</button>
+                <button class="yt-footer-btn primary" onclick="avancarEtapa()" id="btnAvancar">Próximo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let etapaAtual = 1;
+
+        function gerarCanalId() {
+            return "canal_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+        }
+
+        function garantirCanalId() {
+            let canalId = localStorage.getItem("usuarioId");
+            if (!canalId) {
+                canalId = gerarCanalId();
+                localStorage.setItem("usuarioId", canalId);
+            }
+            return canalId;
+        }
+
+        function obterNomeCanal() {
+            return localStorage.getItem("usuarioNome") || "Higor_Bonfim";
+        }
+
+        function obterCanalIdAtual() {
+            return garantirCanalId();
+        }
+
+        function formatarNumero(numero) {
+            return Number(numero || 0).toLocaleString("pt-BR");
+        }
+
+        function extrairNumeroViews(textoViews) {
+            if (!textoViews) return 0;
+            const numero = String(textoViews).replace(/[^\d]/g, "");
+            return Number(numero || 0);
+        }
+
+        function atualizarInfosCanal() {
+            const nomeCanal = obterNomeCanal();
+            const canalId = obterCanalIdAtual();
+
+            document.getElementById("nomeCanalSidebar").textContent = nomeCanal;
+            document.getElementById("avatarCanal").textContent = nomeCanal.charAt(0).toUpperCase();
+            document.getElementById("nomeCanalPersonalizacao").textContent = "Nome do canal: " + nomeCanal;
+            document.getElementById("idCanalPersonalizacao").textContent = "ID do canal: " + canalId;
+        }
+
+        function trocarAba(idAba, elemento) {
+            document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(idAba).classList.add('active');
+            elemento.classList.add('active');
+
+            const texto = elemento.innerText.trim();
+            document.getElementById('titulo-pagina').innerText = texto;
+        }
+
+        function abrirModal() {
+            document.getElementById('modalUpload').style.display = 'flex';
+            etapaAtual = 1;
+            atualizarEtapas();
+        }
+
+        function fecharModal() {
+            document.getElementById('modalUpload').style.display = 'none';
+        }
+
+        function atualizarEtapas() {
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('step' + i).classList.remove('active');
+                document.getElementById('stepBtn' + i).classList.remove('active');
+            }
+
+            document.getElementById('step' + etapaAtual).classList.add('active');
+            document.getElementById('stepBtn' + etapaAtual).classList.add('active');
+
+            document.getElementById('btnVoltar').disabled = etapaAtual === 1;
+
+            const btnAvancar = document.getElementById('btnAvancar');
+            if (etapaAtual === 4) {
+                btnAvancar.textContent = 'Publicar';
+                btnAvancar.onclick = salvarVideo;
+            } else {
+                btnAvancar.textContent = 'Próximo';
+                btnAvancar.onclick = avancarEtapa;
+            }
+        }
+
+        function avancarEtapa() {
+            if (etapaAtual === 1) {
+                const titulo = document.getElementById('tituloVideo').value.trim();
+                const inputArquivo = document.getElementById('arquivoVideo');
+
+                if (!titulo || inputArquivo.files.length === 0) {
+                    return alert("Preencha o título e selecione um vídeo antes de continuar.");
+                }
+            }
+
+            if (etapaAtual < 4) {
+                etapaAtual++;
+                atualizarEtapas();
+            }
+        }
+
+        function voltarEtapa() {
+            if (etapaAtual > 1) {
+                etapaAtual--;
+                atualizarEtapas();
+            }
+        }
+
+        function obterVideosDoCanalAtual() {
+            const canalIdAtual = obterCanalIdAtual();
+            const todosVideos = JSON.parse(localStorage.getItem("meusVideos") || "[]");
+
+            return todosVideos.filter(video => {
+                if (video.canalId) {
+                    return video.canalId === canalIdAtual;
+                }
+
+                // Compatibilidade com vídeos antigos sem canalId:
+                // Se não tiver canalId, cai no nome do autor antigo
+                const nomeAtual = obterNomeCanal();
+                return video.autor === nomeAtual;
+            });
+        }
+
+        function atualizarResumoEAnalytics(videosDoCanal) {
+            const totalVideos = videosDoCanal.length;
+            const totalViews = videosDoCanal.reduce((acc, video) => {
+                return acc + extrairNumeroViews(video.views);
+            }, 0);
+
+            const inscritosMock = Math.max(0, totalVideos * 3); // mock simples
+
+            document.getElementById("resumoVideos").textContent = "Vídeos publicados: " + formatarNumero(totalVideos);
+            document.getElementById("resumoViews").textContent = "Visualizações: " + formatarNumero(totalViews);
+            document.getElementById("resumoInscritos").textContent = "Inscritos: " + formatarNumero(inscritosMock);
+
+            document.getElementById("analyticsViews").textContent = "Visualizações totais: " + formatarNumero(totalViews);
+            document.getElementById("analyticsWatch").textContent = "Tempo de exibição: " + formatarNumero((totalViews * 0.08).toFixed(1)) + " horas";
+            document.getElementById("analyticsSubs").textContent = "Inscritos ganhos: " + formatarNumero(inscritosMock);
+        }
+
+        function carregarVideosStudio() {
+            const videosDoCanal = obterVideosDoCanalAtual();
+            const container = document.getElementById("listaVideosStudio");
+
+            if (!container) return;
+
+            if (videosDoCanal.length === 0) {
+                container.innerHTML = "<p style='color: gray;'>Nenhum vídeo publicado ainda neste canal.</p>";
+                atualizarResumoEAnalytics([]);
+                return;
+            }
+
+            container.innerHTML = "";
+
+            videosDoCanal.forEach(video => {
+                const item = document.createElement("div");
+                item.className = "video-item";
+
+                item.innerHTML = `
+                    <p><strong>${video.titulo}</strong></p>
+                    <p class="small-muted">Autor: ${video.autor}</p>
+                    <p class="small-muted">${video.views || "0 visualizações"}</p>
+                    <p class="small-muted">Visibilidade: ${video.visibilidade || 'publico'}</p>
+                    <a href="${video.url}" target="_blank" class="video-link">Ver vídeo enviado</a>
+                `;
+
+                container.appendChild(item);
+            });
+
+            atualizarResumoEAnalytics(videosDoCanal);
+        }
+
+        async function salvarVideo() {
+            const titulo = document.getElementById('tituloVideo').value.trim();
+            const descricao = document.getElementById('descricaoVideo').value.trim();
+            const inputArquivo = document.getElementById('arquivoVideo');
+            const visibilidade = document.querySelector('input[name="visibilidade"]:checked').value;
+
+            if (!titulo || inputArquivo.files.length === 0) {
+                return alert("Por favor, preencha o título e selecione um vídeo!");
+            }
+
+            const arquivo = inputArquivo.files[0];
+            const formData = new FormData();
+            formData.append('video', arquivo);
+
+            try {
+                const resposta = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!resposta.ok) throw new Error("Erro no servidor");
+
+                const dados = await resposta.json();
+
+                const novoVideo = {
+                    titulo: titulo,
+                    descricao: descricao,
+                    url: dados.url,
+                    autor: obterNomeCanal(),
+                    canalId: obterCanalIdAtual(),
+                    views: "0 visualizações",
+                    visibilidade: visibilidade,
+                    dataPublicacao: new Date().toISOString()
+                };
+
+                let lista = JSON.parse(localStorage.getItem("meusVideos") || "[]");
+                lista.push(novoVideo);
+                localStorage.setItem("meusVideos", JSON.stringify(lista));
+
+                alert("Vídeo publicado com sucesso!");
+                fecharModal();
+
+                document.getElementById('tituloVideo').value = "";
+                document.getElementById('descricaoVideo').value = "";
+                document.getElementById('arquivoVideo').value = "";
+                document.getElementById('nomeArquivo').textContent = "Nenhum arquivo selecionado";
+
+                // reseta visibilidade para público
+                const radioPublico = document.querySelector('input[name="visibilidade"][value="publico"]');
+                if (radioPublico) radioPublico.checked = true;
+
+                carregarVideosStudio();
+                trocarAba('conteudo', document.querySelectorAll('.menu-item')[1]);
+
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao enviar vídeo! Verifique se o servidor Node.js está rodando.");
+            }
+        }
+
+        document.getElementById('arquivoVideo').addEventListener('change', function() {
+            const nome = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo selecionado";
+            document.getElementById('nomeArquivo').textContent = nome;
+        });
+
+        atualizarInfosCanal();
+        carregarVideosStudio();
+    </script>
+</body>
+</html>

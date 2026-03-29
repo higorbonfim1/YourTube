@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Reproduzindo - YourTube</title>
+    <style>
+        body { font-family: Roboto, Arial, sans-serif; margin: 0; background: #fff; }
+        header { background: #fff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .watch-container { display: flex; max-width: 1280px; margin: 20px auto; gap: 24px; padding: 0 24px; }
+        .main-video { flex: 3; }
+        .video-player { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; }
+        
+        /* Título e Ações */
+        .video-details { margin-top: 12px; }
+        .video-title { font-size: 20px; font-weight: bold; color: #0f0f0f; margin-bottom: 8px; }
+        
+        .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; flex-wrap: wrap; gap: 10px; }
+        .channel-info { display: flex; align-items: center; gap: 12px; }
+        .channel-pic { width: 40px; height: 40px; background: #ddd; border-radius: 50%; }
+        .channel-name { font-weight: bold; font-size: 16px; }
+        .subscribe-btn { background: #0f0f0f; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-left: 10px; }
+        
+        .video-buttons { display: flex; gap: 8px; }
+        .btn-action { background: #f2f2f2; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .btn-action:hover { background: #e5e5e5; }
+
+        /* Comentários */
+        .comments-section { margin-top: 24px; border-top: 1px solid #eee; padding-top: 24px; }
+        .comment-input-box { display: flex; gap: 15px; margin-bottom: 30px; }
+        .comment-input { width: 100%; border: none; border-bottom: 1px solid #ccc; padding: 5px 0; outline: none; }
+        .comment-input:focus { border-bottom: 2px solid #0f0f0f; }
+
+        /* Lateral */
+        .sidebar-suggestions { flex: 1; min-width: 300px; }
+        .suggestion-card { display: flex; gap: 8px; margin-bottom: 12px; cursor: pointer; }
+        .suggestion-thumb { width: 168px; height: 94px; background: #ddd; border-radius: 8px; flex-shrink: 0; }
+        .suggestion-title { font-size: 14px; font-weight: bold; line-height: 1.2; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="font-weight: bold; color: red; font-size: 24px; cursor:pointer;" onclick="window.location.href='index.html'">YourTube</div>
+    <div style="width: 40%;"><input type="text" placeholder="Pesquisar" style="width: 100%; padding: 8px 20px; border-radius: 20px; border: 1px solid #ccc;"></div>
+    <div id="user-initial" style="background: red; color:white; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">U</div>
+</header>
+
+<div class="watch-container">
+    <div class="main-video">
+        <video id="player" class="video-player" controls autoplay></video>
+        
+        <div class="video-details">
+            <div id="display-title" class="video-title">Título do Vídeo</div>
+            
+            <div class="actions-bar">
+                <div class="channel-info">
+                    <div class="channel-pic"></div>
+                    <div>
+                        <div id="display-channel" class="channel-name">Canal do Usuário</div>
+                        <div style="font-size: 12px; color: #606060;">0 inscritos</div>
+                    </div>
+                    <button class="subscribe-btn" onclick="this.innerText='Inscrito'; this.style.background='#f2f2f2'; this.style.color='black'">Inscrever-se</button>
+                </div>
+                
+                <div class="video-buttons">
+                    <button class="btn-action" onclick="alert('Você deu like!')">👍 <span id="like-count">12</span></button>
+                    <button class="btn-action">👎</button>
+                    <button class="btn-action">↗️ Compartilhar</button>
+                    <button class="btn-action">...</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <h3 id="comment-count">0 Comentários</h3>
+            <div class="comment-input-box">
+                <div class="channel-pic" style="width: 32px; height: 32px;"></div>
+                <input type="text" class="comment-input" placeholder="Adicione um comentário...">
+            </div>
+            <div id="comments-list">
+                <p style="color: #606060; font-size: 14px;">Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-suggestions">
+        <h4 style="margin-top: 0;">Sugestões</h4>
+        <!-- Exemplo de sugestão -->
+        <div class="suggestion-card">
+            <div class="suggestion-thumb"></div>
+            <div>
+                <div class="suggestion-title">Próximo vídeo incrível para você ver</div>
+                <div style="font-size: 12px; color: #606060; margin-top: 5px;">MyTube Creator</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoSrc = urlParams.get('v');
+        const videoTitle = urlParams.get('t');
+        const canalLogado = localStorage.getItem("usuarioNome") || "Higor Bonfim";
+
+        if (videoSrc) {
+            document.getElementById('player').src = videoSrc;
+            document.getElementById('display-title').innerText = videoTitle;
+            document.getElementById('display-channel').innerText = canalLogado;
+            document.getElementById('user-initial').innerText = canalLogado.charAt(0).toUpperCase();
+        }
+
+        // --- LÓGICA DE INSCRITOS ---
+        // Pega o número atual do banco ou começa com 0
+        let totalInscritos = parseInt(localStorage.getItem("totalInscritos") || "0");
+        const displayInscritos = document.querySelector('.channel-info div div:last-child');
+        displayInscritos.innerText = totalInscritos + " inscritos";
+
+        window.inscrever = function(btn) {
+            if (btn.innerText === "Inscrever-se") {
+                totalInscritos++;
+                btn.innerText = "Inscrito";
+                btn.style.background = "#f2f2f2";
+                btn.style.color = "black";
+            } else {
+                totalInscritos--;
+                btn.innerText = "Inscrever-se";
+                btn.style.background = "#0f0f0f";
+                btn.style.color = "white";
+            }
+            // Salva o novo número para as outras páginas verem
+            localStorage.setItem("totalInscritos", totalInscritos);
+            displayInscritos.innerText = totalInscritos + " inscritos";
+        }
+
+        // --- LÓGICA DE COMENTÁRIOS ---
+        const input = document.querySelector('.comment-input');
+        const list = document.getElementById('comments-list');
+        const countDisplay = document.getElementById('comment-count');
+
+        // Função para atualizar o contador de comentários
+        function atualizarContadorComentarios() {
+            const itens = list.querySelectorAll('.comment-item').length;
+            countDisplay.innerText = itens + " Comentários";
+        }
+
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && this.value !== '') {
+                if(list.innerText.includes("Nenhum comentário")) list.innerHTML = '';
+                
+                const newComment = `
+                    <div class="comment-item" style="display:flex; gap:15px; margin-bottom:20px;">
+                        <div class="channel-pic" style="width:32px; height:32px;"></div>
+                        <div>
+                            <div style="font-size:13px; font-weight:bold;">${canalLogado} <span style="font-weight:normal; color:#606060; margin-left:5px;">agora</span></div>
+                            <div style="font-size:14px; margin-top:3px;">${this.value}</div>
+                        </div>
+                    </div>
+                `;
+                list.insertAdjacentHTML('afterbegin', newComment);
+                this.value = '';
+                atualizarContadorComentarios(); // Sobe o número na hora
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
